@@ -20,13 +20,6 @@ var THUMBS = ['http://facebook.github.io/react/img/logo_og.png',
   'http://facebook.github.io/react/img/logo_og.png'];
 
 var createThumbRow = (uri, i) => <Thumb key={i} uri={uri}/>;
-var createDotRow = (uri, i) => function () {
-  if (i === 0) {
-    return <Dot selected={true} />
-  } else {
-    return <Dot />
-  }
-};
 var PM25 = React.createClass({
   render: function () {
     return (
@@ -39,9 +32,6 @@ var PM25 = React.createClass({
               horizontal={true}>
             {THUMBS.map(createThumbRow)}
           </ScrollView>
-          <View>
-            {THUMBS.map(createDotRow)}
-          </View>
         </View>
     );
   }
@@ -60,9 +50,29 @@ var Thumb = React.createClass({
   }
 });
 
+var DotsNav = React.createClass({
+  propTypes: {
+    selectedIndex: Number,
+    length: Number
+  },
+  render: function () {
+    var style = styles.dotComponent;
+    var currentIndex = this.props.selectedIndex || 0;
+    var dots = []
+    for(var i; i < this.props.length; i++){
+      dots.push(<Dot selected={(i === currentIndex) ? true : false} />)
+    }
+    return (
+      <View style={style.wrapper}>
+        {dots}
+      </View>
+    )
+  }
+});
+
 var Dot = React.createClass({
   propTypes: {
-    selected: false
+    selected: Boolean
   },
   render: function () {
     let selected = this.props.selected;
@@ -73,10 +83,22 @@ var Dot = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5
+  dotComponent: {
+    wrapper: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      height:30,
+      position: 'absolute',
+      bottom: 0
+    },
+    inner: {
+
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: 5
+    },
   },
   panel: {
     backgroundColor: '#cccccc',
