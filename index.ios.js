@@ -20,28 +20,45 @@ var THUMBS = ['http://facebook.github.io/react/img/logo_og.png',
   'http://facebook.github.io/react/img/logo_og.png'];
 
 var createThumbRow = (uri, i) => <Thumb key={i} uri={uri}/>;
+
 var PM25 = React.createClass({
-  render: function () {
+  getInitialState () {
+    return {
+      index: 0
+    }
+  },
+  onScrollAnimationEndHandler (SyntheticEvent) {
+    var e = SyntheticEvent.nativeEvent;
+    var screenW = Dimensions.get('window').width;
+    var index = Math.floor(e.contentOffset.x/screenW);
+    if(index <= -0) { index = 0; }
+    this.setState({
+      index: index
+    })
+  },
+  render () {
     return (
-        <View style={{backgroundColor: '#000000'}}>
+        <View style={styles.container}>
           <ScrollView
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
               pagingEnabled={true}
               automaticallyAdjustContentInsets={false}
-              horizontal={true}>
+              horizontal={true}
+              onMomentumScrollEnd={this.onScrollAnimationEndHandler}>
             {THUMBS.map(createThumbRow)}
           </ScrollView>
+          <DotsNav length={THUMBS.length} selectedIndex={this.state.index}/>
         </View>
     );
   }
 });
 
 var Thumb = React.createClass({
-  shouldComponentUpdate: function (nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return false;
   },
-  render: function () {
+  render () {
     return (
         <View style={styles.panel}>
           <Image style={styles.img} source={{uri: this.props.uri}}/>
@@ -51,54 +68,51 @@ var Thumb = React.createClass({
 });
 
 var DotsNav = React.createClass({
-  propTypes: {
-    selectedIndex: Number,
-    length: Number
-  },
-  render: function () {
-    var style = styles.dotComponent;
+  render () {
     var currentIndex = this.props.selectedIndex || 0;
-    var dots = []
-    for(var i; i < this.props.length; i++){
-      dots.push(<Dot selected={(i === currentIndex) ? true : false} />)
+    var dots = [];
+    for (var i = 0; i < this.props.length; i++) {
+      dots.push(<Dot key={i} selected={(i === currentIndex) ? true : false}/>)
     }
     return (
-      <View style={style.wrapper}>
-        {dots}
-      </View>
+        <View style={styles.dotWrapper}>
+          <View style={[styles.dotInner, {width: 10*this.props.length}]}>
+            {dots}
+          </View>
+        </View>
     )
   }
 });
 
 var Dot = React.createClass({
-  propTypes: {
-    selected: Boolean
-  },
-  render: function () {
+  render () {
     let selected = this.props.selected;
     return (
-        <View style={[styles.dot, { backgroundColor: selected? '#f3f3f3' : '#ffffff' }]}></View>
+        <View style={[styles.dot, { backgroundColor: selected? 'red' : '#ffffff' }]}></View>
     )
   }
 });
 
 var styles = StyleSheet.create({
-  dotComponent: {
-    wrapper: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      height:30,
-      position: 'absolute',
-      bottom: 0
-    },
-    inner: {
-
-    },
-    dot: {
-      width: 10,
-      height: 10,
-      borderRadius: 5
-    },
+  container: {
+    backgroundColor: '#000000'
+  },
+  dotWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 30,
+    width: Dimensions.get('window').width,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: '#000000'
+  },
+  dotInner: {
+    flexDirection: 'row'
+  },
+  dot: {
+    flex: 1,
+    height: 10,
+    borderRadius: 5
   },
   panel: {
     backgroundColor: '#cccccc',
