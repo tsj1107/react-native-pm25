@@ -15,7 +15,7 @@ var PM2_5_DATA = [
     "area": "广州",
     "pm2_5": 106,
     "pm2_5_24h": 115,
-    "quality": "良好",
+    "quality": "良",
     "time_point": "2013-04-16T11:00:00Z"
   },
   {
@@ -23,7 +23,7 @@ var PM2_5_DATA = [
     "area": "杭州",
     "pm2_5": 223,
     "pm2_5_24h": 115,
-    "quality": "中度污染",
+    "quality": "优",
     "time_point": "2013-04-16T11:00:00Z"
   },
   {
@@ -37,6 +37,13 @@ var PM2_5_DATA = [
 ];
 
 var COLOR_ARR = ['#219161', '#842210', '#8959a8'];
+var QULITY_ICON_MAP = {
+  '优': 'Y^o^Y',
+  '良': '(^o^)/~',
+  '轻度污染': '⊙︿⊙',
+  '中度污染': '⊙﹏⊙',
+  '严重污染': '⊙﹏⊙‖∣'
+}
 
 var PM25 = React.createClass({
   getInitialState () {
@@ -72,6 +79,7 @@ var PM25 = React.createClass({
             {PM2_5_DATA.map(createPanelRow)}
           </ScrollView>
           <DotsNav length={PM2_5_DATA.length} selectedIndex={this.state.index}/>
+          <Text style={{position: 'absolute', bottom: 0, right: 0, color: '#ffffff', backgroundColor: 'none'}}>⊙﹏⊙b汗</Text>
         </View>
     );
   }
@@ -87,10 +95,10 @@ var Panel = React.createClass({
     return (
         <View style={[styles.panel, {backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)]}]}>
           <Text style={{fontSize: 50, color: '#ffffff' }}>{this.props.area}</Text>
-          <Text style={{fontSize: 100, color: '#ffffff', marginBottom: 30}}>
+          <Text style={{fontSize: 100, color: '#ffffff' }}>
             {this.props.pm25}
           </Text>
-          <Text style={{fontSize: 20, color: '#ffffff'}}>{this.props.quality}</Text>
+          <Text style={{fontSize: 30, color: '#ffffff' }}>{QULITY_ICON_MAP[this.props.quality]}</Text>
         </View>
     );
   }
@@ -149,7 +157,8 @@ var styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingBottom: 150
   },
   img: {
     width: 64,
