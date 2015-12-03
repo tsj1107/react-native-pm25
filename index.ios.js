@@ -9,23 +9,46 @@ var { AppRegistry,
     Dimensions,
     View } = React;
 
-var THUMBS = ['http://facebook.github.io/react/img/logo_og.png',
-  'https://t.alipayobjects.com/images/T11rdgXbFkXXXXXXXX.png',
-  'http://facebook.github.io/react/img/logo_og.png',
-  'https://t.alipayobjects.com/images/T11rdgXbFkXXXXXXXX.png',
-  'http://facebook.github.io/react/img/logo_og.png',
-  'https://t.alipayobjects.com/images/T11rdgXbFkXXXXXXXX.png',
-  'http://facebook.github.io/react/img/logo_og.png',
-  'https://t.alipayobjects.com/images/T11rdgXbFkXXXXXXXX.png',
-  'http://facebook.github.io/react/img/logo_og.png'];
+var PM2_5_DATA = [
+  {
+    "aqi": 151,
+    "area": "广州",
+    "pm2_5": 106,
+    "pm2_5_24h": 115,
+    "quality": "良好",
+    "time_point": "2013-04-16T11:00:00Z"
+  },
+  {
+    "aqi": 151,
+    "area": "杭州",
+    "pm2_5": 223,
+    "pm2_5_24h": 115,
+    "quality": "中度污染",
+    "time_point": "2013-04-16T11:00:00Z"
+  },
+  {
+    "aqi": 151,
+    "area": "上海",
+    "pm2_5": 250,
+    "pm2_5_24h": 115,
+    "quality": "中度污染",
+    "time_point": "2013-04-16T11:00:00Z"
+  }
+];
 
-var createThumbRow = (uri, i) => <Thumb key={i} uri={uri}/>;
+var COLOR_ARR = ['#219161', '#842210', '#8959a8'];
 
 var PM25 = React.createClass({
   getInitialState () {
     return {
       index: 0
     }
+  },
+  componentDidMount () {
+    this.fetchData();
+  },
+  fetchData () {
+
   },
   onScrollAnimationEndHandler (SyntheticEvent) {
     var e = SyntheticEvent.nativeEvent;
@@ -46,22 +69,28 @@ var PM25 = React.createClass({
               automaticallyAdjustContentInsets={false}
               horizontal={true}
               onMomentumScrollEnd={this.onScrollAnimationEndHandler}>
-            {THUMBS.map(createThumbRow)}
+            {PM2_5_DATA.map(createPanelRow)}
           </ScrollView>
-          <DotsNav length={THUMBS.length} selectedIndex={this.state.index}/>
+          <DotsNav length={PM2_5_DATA.length} selectedIndex={this.state.index}/>
         </View>
     );
   }
 });
 
-var Thumb = React.createClass({
+var createPanelRow = (item, i) => <Panel area={item.area} index={i} key={i} pm25={item.pm2_5} quality={item.quality} />;
+
+var Panel = React.createClass({
   shouldComponentUpdate (nextProps, nextState) {
     return false;
   },
   render () {
     return (
-        <View style={styles.panel}>
-          <Image style={styles.img} source={{uri: this.props.uri}}/>
+        <View style={[styles.panel, {backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)]}]}>
+          <Text style={{fontSize: 50, color: '#ffffff' }}>{this.props.area}</Text>
+          <Text style={{fontSize: 100, color: '#ffffff', marginBottom: 30}}>
+            {this.props.pm25}
+          </Text>
+          <Text style={{fontSize: 20, color: '#ffffff'}}>{this.props.quality}</Text>
         </View>
     );
   }
@@ -88,7 +117,7 @@ var Dot = React.createClass({
   render () {
     let selected = this.props.selected;
     return (
-        <View style={[styles.dot, { backgroundColor: selected? 'red' : '#ffffff' }]}></View>
+        <View style={[styles.dot, { opacity: selected? 0.5 : 1 }]}></View>
     )
   }
 });
@@ -100,11 +129,11 @@ var styles = StyleSheet.create({
   dotWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 30,
     width: Dimensions.get('window').width,
     position: 'absolute',
+    height: 30,
     bottom: 0,
-    backgroundColor: '#000000'
+    backgroundColor: 'none'
   },
   dotInner: {
     flexDirection: 'row'
@@ -112,10 +141,11 @@ var styles = StyleSheet.create({
   dot: {
     flex: 1,
     height: 10,
-    borderRadius: 5
+    margin: 1,
+    borderRadius: 5,
+    backgroundColor: '#ffffff'
   },
   panel: {
-    backgroundColor: '#cccccc',
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
     alignItems: 'center',
