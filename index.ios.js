@@ -99,8 +99,18 @@ var PM25 = React.createClass({
 });
 
 var Panel = React.createClass({
-  shouldComponentUpdate (nextProps, nextState) {
-    return false;
+  getInitialState () {
+    return {
+      horizontal: this.props.horizontal
+    }
+  },
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+      horizontal: nextProps.horizontal
+    })
+  },
+  shouldComponentUpdate (nextProps) {
+    return (nextProps.horizontal !== this.props.horizontal)
   },
   componentDidMount () {
     this.fetchData();
@@ -109,9 +119,18 @@ var Panel = React.createClass({
 
   },
   render () {
+    var renderStyle = {
+      backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)],
+      position: 'relative',
+      top: null
+    };
 
+    if(!this.state.horizontal){
+      renderStyle['position'] = 'absolute';
+      renderStyle['top'] = this.props.index * 100;
+    }
     return (
-        <View style={[styles.panel, {backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)]}]}>
+        <View style={[styles.panel, renderStyle]}>
           <Text style={{fontSize: 50, color: '#ffffff' }}>{this.props.area}</Text>
           <Text style={{fontSize: 100, color: '#ffffff' }}>
             {this.props.pm25}
