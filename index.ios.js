@@ -48,14 +48,14 @@ var QULITY_ICON_MAP = {
 var PM25 = React.createClass({
   getInitialState () {
     return {
-      index: 0
+      index: 0,
+      horizontal: true
     }
   },
-  componentDidMount () {
-    this.fetchData();
-  },
-  fetchData () {
-
+  switchLayout () {
+    this.setState({
+      horizontal: !this.state.horizontal
+    })
   },
   onScrollAnimationEndHandler (SyntheticEvent) {
     var e = SyntheticEvent.nativeEvent;
@@ -66,32 +66,50 @@ var PM25 = React.createClass({
       index: index
     })
   },
+  createPanelRow (item, i) {
+    return (
+        <Panel area={item.area}
+               index={i}
+               key={i}
+               pm25={item.pm2_5}
+               quality={item.quality}
+               horizontal={this.state.horizontal} />
+    );
+  },
   render () {
     return (
         <View style={styles.container}>
           <ScrollView
+              style={styles.scrollView}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
-              pagingEnabled={true}
+              pagingEnabled={this.state.horizontal}
               automaticallyAdjustContentInsets={false}
-              horizontal={true}
+              horizontal={this.state.horizontal}
               onMomentumScrollEnd={this.onScrollAnimationEndHandler}>
-            {PM2_5_DATA.map(createPanelRow)}
+            {PM2_5_DATA.map(this.createPanelRow)}
           </ScrollView>
-          <DotsNav length={PM2_5_DATA.length} selectedIndex={this.state.index}/>
-          <Text style={{position: 'absolute', bottom: 0, right: 0, color: '#ffffff', backgroundColor: 'none'}}>⊙﹏⊙b汗</Text>
+          {this.state.horizontal ? (
+              <DotsNav length={PM2_5_DATA.length} selectedIndex={this.state.index}/>
+          ) : null}
+          <Text onPress={this.switchLayout} style={{position: 'absolute', top: 30, right: 0, color: '#ffffff', backgroundColor: 'none'}}>⊙﹏⊙b汗</Text>
         </View>
     );
   }
 });
 
-var createPanelRow = (item, i) => <Panel area={item.area} index={i} key={i} pm25={item.pm2_5} quality={item.quality} />;
-
 var Panel = React.createClass({
   shouldComponentUpdate (nextProps, nextState) {
     return false;
   },
+  componentDidMount () {
+    this.fetchData();
+  },
+  fetchData () {
+
+  },
   render () {
+
     return (
         <View style={[styles.panel, {backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)]}]}>
           <Text style={{fontSize: 50, color: '#ffffff' }}>{this.props.area}</Text>
@@ -131,6 +149,10 @@ var Dot = React.createClass({
 });
 
 var styles = StyleSheet.create({
+  scrollView: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
+  },
   container: {
     backgroundColor: '#000000'
   },
