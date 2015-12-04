@@ -7,7 +7,8 @@ var { AppRegistry,
     StyleSheet,
     Image,
     Dimensions,
-    View } = React;
+    View,
+    Animated} = React;
 
 var PM2_5_DATA = [
   {
@@ -120,23 +121,36 @@ var Panel = React.createClass({
   },
   render () {
     var renderStyle = {
-      backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)],
-      position: 'relative',
-      top: null
+      backgroundColor: COLOR_ARR[this.props.index%(COLOR_ARR.length)]
     };
 
     if(!this.state.horizontal){
       renderStyle['position'] = 'absolute';
       renderStyle['top'] = this.props.index * 100;
+      renderStyle['alignItems'] = 'flex-start';
+      renderStyle['height'] = 100;
+      renderStyle['flexDirection'] = 'row';
+      renderStyle['paddingTop'] = 30;
+      renderStyle['paddingLeft'] = 20;
     }
     return (
-        <View style={[styles.panel, renderStyle]}>
+      this.state.horizontal ? (
+        <Animated.View style={[styles.panel, renderStyle]}>
           <Text style={{fontSize: 50, color: '#ffffff' }}>{this.props.area}</Text>
           <Text style={{fontSize: 100, color: '#ffffff' }}>
             {this.props.pm25}
           </Text>
           <Text style={{fontSize: 30, color: '#ffffff' }}>{QULITY_ICON_MAP[this.props.quality]}</Text>
-        </View>
+        </Animated.View>
+      ) : (
+        <Animated.View style={[styles.panel, renderStyle]}>
+          <Text style={{fontSize: 30, color: '#ffffff', flex: 1 }}>{this.props.area}</Text>
+          <Text style={{fontSize: 30, color: '#ffffff', flex: 1 }}>
+            {this.props.pm25}
+          </Text>
+          <Text style={{fontSize: 30, color: '#ffffff', flex: 1 }}>{QULITY_ICON_MAP[this.props.quality]}</Text>
+        </Animated.View>
+      )
     );
   }
 });
